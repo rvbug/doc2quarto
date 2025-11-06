@@ -6,13 +6,25 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 use anyhow::Result;
-
+use doc2quarto::{process_files, convert_content, convert_frontmatter, convert_admonitions};
 /// CLI tool to convert markdown .md to quarto .qmd format
 
 #[derive(Parser, Debug)]
 #[command(name="doc2quarto")]
 #[command(about="Converts markdown.md to Quarto .qmd format", long_about=None)]
 struct Args {
+
+    /// Command-line arguments for the doc2quarto tool.
+    ///
+    /// # Examples
+    /// ```bash
+    /// # Using long flags
+    /// doc2quarto --source ./docs --dest ./quarto-output
+    ///
+    /// # Using short flags
+    /// doc2quarto -s ./docs -d ./quarto-output
+    /// ```
+    
     /// source directory containing Docusaurus markdown files
     #[arg(short, long)]
     source: PathBuf,
@@ -24,7 +36,7 @@ struct Args {
 }
 
 
-fn main() {
+pub fn main() {
 
     /// Entry point for the doc2quarto CLI application.
     ///
@@ -124,213 +136,6 @@ fn main() {
     // Display Summary
 
 } // end of function
-
-
-
-fn process_files(source_file: &Path, source_root: &Path, dest_root: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    
-    /// Processes a single markdown file from Docusaurus to Quarto format.
-    ///
-    /// This function handles the complete conversion pipeline for a single file:
-    /// - Reads the source markdown file
-    /// - Converts content (frontmatter and admonitions)
-    /// - Preserves directory structure in destination
-    /// - Changes file extension from .md to .qmd
-    /// - Copies associated img folders
-    ///
-    /// # Arguments
-    /// - `source_file`: Path to the source .md file
-    /// - `source_root`: Root directory of the source files (for calculating relative paths)
-    /// - `dest_root`: Root directory where converted files will be written
-    ///
-    /// # Returns
-    /// - `Ok(())` on successful conversion and write
-    /// - `Err` if file reading, path manipulation, or writing fails
-    ///
-    /// # Example
-    /// ```rust
-    /// process_file(
-    ///     Path::new("docs/guide/intro.md"),
-    ///     Path::new("docs"),
-    ///     Path::new("output")
-    /// )?;
-    /// ```
-
-   
-    // Read the entire file  content as a String
-    let content = fs::read_to_string(source_file)?;
-    println!("  📖 Read {} bytes from {:?}", content.len(), source_file);
-
-    // Convert the content from Docusaurus to Quarto format
-    let converted = convert_content(&content);
-    println!("  🔄 Converted content: {} bytes", converted.len());
-
-    // Calculate the relative path from source root
-    let relative_path = source_file.strip_prefix(source_root)?;
-    println!("  📍 Relative path: {:?}", relative_path);
-
-    // Create destination path with .qmd extension
-    let mut dest_path = dest_root.join(relative_path);
-    dest_path.set_extension("qmd");
-    println!("  📝 Destination path: {:?}", dest_path);
-
-    // Create parent directories if they don't exist
-    if let Some(parent) = dest_path.parent() {
-        fs::create_dir_all(parent)?;
-        println!("  📁 Created parent directory: {:?}", parent);
-    }
-
-    // Write converted content to destination file
-    fs::write(&dest_path, converted)?;
-    println!("  ✅ Written to: {:?}", dest_path);
-
-    // Copy img folder if it exists in the same directory
-    copy_img_folder(source_file, &dest_path)?;
-
-
-    Ok(())
-}
-
-/// Convert Docusourus markdown content to Quarto format
-fn convert_content(content: &str) -> String {
-
-    let mut result = String::new();
-    let mut in_frontmatter = false;
-    let mut frontmatter_lines = Vec::new();
-
-    
-    // Process the file line by line
-    for line in content.lines() {
-        // Handle frontmatter (All YAML between these "---" markers)
-        if line == "---" {
-            if !in_frontmatter {
-                in_frontmatter = true;
-                continue;
-            } else {
-                // End of frontmatter - convert and add to result
-                result.push_str("---\n");
-                result.push_str(&convert_frontmatter(&frontmatter_lines));
-                // result.push_str("---\n");
-                frontmatter_lines.clear();
-                continue;
-            }
-        }
-
-        if in_frontmatter {
-            // Collect frontmatter lines for processing
-            frontmatter_lines.push(line);
-        } else {
-            // Convert admonitions in the content
-            let converted_line = convert_admonitions(line);
-            result.push_str(&converted_line);
-            result.push('\n');
-        }
-    }
-
-    result
-}
-
-
-
-
-fn convert_frontmatter(lines: &[&str]) -> String {
-
-    let mut result = String::new();
-
-    for line in lines {
-        // Convert 'sidebar_position' to 'order'
-        if line.trim().starts_with("sidebar_position") {
-            let value = line.split(':').nth(1).unwrap_or("").trim();
-            result.push_str(&format!("order: {}\n", value));
-        } else {
-            result.push_str(line);
-            result.push('\n');
-        }
-    }
-    result
- }
-
-
-fn convert_admonitions(line: &str) -> String {
-
-    // Regex to match Docusourus admonitions :::note :::tip etc
-    let admonition_start = Regex::new(r"^:::(\w)+(.*)$").unwrap();
-    let admonition_end = Regex::new(r"^:::$").unwrap();
-
-    // Convert opening admonitin syntax
-    if let Some(caps) = admonition_start.captures(line) {
-        let admonition_type = &caps[1];
-        let title = caps.get(2).map(|m| m.as_str().trim()).unwrap_or("");
-
-        // Map Docusaurus admonitions to Quarto callout types
-        let quarto_type = match admonition_type.to_lowercase().as_str() {
-            "note" => "note",
-            "tip" => "tip",
-            "info" => "note",
-            "caution" => "caution",
-            "warning" => "warning",
-            "danger" => "important",
-            _ => admonition_type,
-        };
-
-        // Build Quarto callout syntax
-        if title.is_empty() {
-            format!(":::: {{{}}}", quarto_type)
-        } else {
-            format!(":::: {{.callout-{}}}\n## {}", quarto_type, title)
-        }
-     }
-
-    // Conver closing admonition syntax
-    else if admonition_end.is_match(line) {
-        "::::".to_string()
-    }
-    // Return line unchanged if it is not admonition
-    else {
-        line.to_string()
-    }
-} //end of function
-
-/// Copy the img folder from source to destination
-fn copy_img_folder(source_file: &Path, dest_file: &Path) -> Result<(), std::io::Error> {
-
-    // Get the parent directory of the source file
-    if let Some(source_parent) = source_file.parent() {
-        let img_folder = source_parent.join("img");
-        
-        // Check if img folder exists
-        if img_folder.exists() && img_folder.is_dir() {
-            // Get destination parent directory
-            if let Some(dest_parent) = dest_file.parent() {
-                let dest_img = dest_parent.join("img");
-                
-                // Create destination img folder
-                fs::create_dir_all(&dest_img)?;
-                
-                // Copy all files from source img to dest img
-                for entry in fs::read_dir(&img_folder)? {
-                    let entry = entry?;
-                    let file_name = entry.file_name();
-                    let dest_file_path = dest_img.join(&file_name);
-                    fs::copy(entry.path(), dest_file_path)?;
-                }
-            }
-        }
-    }
-
-
-    Ok(())
-    
-}
-
-
-
-
-
-
-
-
-
 
 
 

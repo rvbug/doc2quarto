@@ -1,120 +1,35 @@
-use clap::Parser;
-use colored::*;
-use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 use std::fs;
-use std::path::{Path, PathBuf};
-use walkdir::WalkDir;
-use anyhow::Result;
+use std::path::Path;
 
-/// CLI tool to convert markdown .md to quarto .qmd format
-
-#[derive(Parser, Debug)]
-#[command(name="doc2quarto")]
-#[command(about="Converts markdown.md to Quarto .qmd format", long_about=None)]
-struct Args {
-    /// source directory containing Docusaurus markdown files
-    #[arg(short, long)]
-    source: PathBuf,
-
-    /// destination directory for converted Quarto files
-    #[arg(short, long)]
-    dest: PathBuf,
-
-}
-
-
-fn main() {
-    //parse command line arguments using clap
-
-    let args = Args::parse();
-    println!("\n");
-    println!("{}","Doc2Quarto - Docusaurus to Quarto Converter".bright_cyan().bold());
-    println!("{}", "=".repeat(45).bright_black());
-
-    // check if Source directory if exists
-    if !args.source.exists() {
-        eprintln!("{} Source directory does not exists: {:?}", "x".red(), args.source);
-        std::process::exit(1);
-    }
-
-    //check if the destination directory exists
-    // if !args.dest.exists() {
-    //     eprintln!("{} Destination directory does not exists: {:?}", "x".red(), args.dest);
-    //     println!("creating the directory");
-    //     // create destination directory if it does not exist
-    //     if let Err(e) = fs::create_dir_all(&args.dest) {
-    //         eprintln!("{} Failed to create destination directory: {}", "x".red(), e);
-    //         std::process::exit(1);
-    //     }
-    // }
-
-
-    // Create destination directory if it doesn't exist
-    if let Err(e) = fs::create_dir_all(&args.dest) {
-        eprintln!("{} Failed to create destination directory: {}", "✗".red(), e);
-        std::process::exit(1);
-    }
-
-
-    // collect all .md files from source director
-
-    let md_files: Vec<PathBuf> = WalkDir::new(&args.source)
-                 .into_iter()
-                 .filter_map(|e| e.ok())
-                 .filter(|e| e.path().extension().and_then(|s| s.to_str()) == Some("md"))
-                .map(|e| e.path().to_path_buf())           
-                .collect();
-
-    if md_files.len() == 0 {
-        eprintln!("{} No .md files found in source directory", "x".red());
-        std::process::exit(1);
-    }
-    println!("{} Found {} .md files in source directory", "✓".green(), md_files.len());
-    println!("\n{} Found {} markdown files", "ℹ".blue(), md_files.len());
-
-    //create progress bar for visual feedback
-    let pb = ProgressBar::new(md_files.len() as u64);
-    pb.set_style(
-        ProgressStyle::default_bar()
-            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {post}/{len} {msg}")
-            .unwrap()
-            .progress_chars("#>-"),
-    );
-   
-    let mut success_count = 0;
-    let mut error_count = 0;
-
-
-    // Process each markdown file
-    for md_file in md_files {
-        let file_name = md_file.file_name().unwrap().to_string_lossy();
-        pb.set_message(format!("Processing: {}", file_name));
-
-        match process_files(&md_file, &args.source, &args.dest) {
-            Ok(_) => {
-                success_count += 1;
-                pb.println(format!("{} Processed: {}", "✓".green(), file_name));
-            }
-            Err(e) => {
-                eprintln!("{} Failed to process file: {}", "x".red(), e);
-                pb.inc(1);
-            }   
-        }
-   
-        pb.inc(1);
-
-    }
-    pb.finish_with_message("Conversion completed!");
-
-    // Display Summary
-
-} // end of function
-
-
-
-fn process_files(source_file: &Path, source_root: &Path, dest_root: &Path) -> Result<(), Box<dyn std::error::Error>> {
+pub fn process_files(source_file: &Path, source_root: &Path, dest_root: &Path) -> Result<(), Box<dyn std::error::Error>> {
     
+    /// Processes a single markdown file from Docusaurus to Quarto format.
+    ///
+    /// This function handles the complete conversion pipeline for a single file:
+    /// - Reads the source markdown file
+    /// - Converts content (frontmatter and admonitions)
+    /// - Preserves directory structure in destination
+    /// - Changes file extension from .md to .qmd
+    /// - Copies associated img folders
+    ///
+    /// # Arguments
+    /// - `source_file`: Path to the source .md file
+    /// - `source_root`: Root directory of the source files (for calculating relative paths)
+    /// - `dest_root`: Root directory where converted files will be written
+    ///
+    /// # Returns
+    /// - `Ok(())` on successful conversion and write
+    /// - `Err` if file reading, path manipulation, or writing fails
+    ///
+    /// # Example
+    /// ```rust
+    /// process_file(
+    ///     Path::new("docs/guide/intro.md"),
+    ///     Path::new("docs"),
+    ///     Path::new("output")
+    /// )?;
+    /// ```
 
    
     // Read the entire file  content as a String
@@ -152,7 +67,28 @@ fn process_files(source_file: &Path, source_root: &Path, dest_root: &Path) -> Re
 }
 
 /// Convert Docusourus markdown content to Quarto format
-fn convert_content(content: &str) -> String {
+pub fn convert_content(content: &str) -> String {
+
+    /// Converts Docusaurus markdown content to Quarto format.
+    ///
+    /// Performs two main transformations:
+    /// 1. Frontmatter: Converts Docusaurus YAML frontmatter to Quarto format
+    /// 2. Admonitions: Converts Docusaurus-style admonitions (:::note) to Quarto callout blocks
+    ///
+    /// The function uses a state machine to track whether it's currently processing
+    /// frontmatter (between --- markers) or regular content.
+    ///
+    /// # Arguments
+    /// - `content`: The complete content of the markdown file as a string
+    ///
+    /// # Returns
+    /// A new String containing the converted content in Quarto format
+    ///
+    /// # Example
+    /// ```rust
+    /// let docusaurus_content = "---\ntitle: Hello\n---\n:::note\nImportant!\n:::";
+    /// let quarto_content = convert_content(docusaurus_content);
+    /// ```
 
     let mut result = String::new();
     let mut in_frontmatter = false;
@@ -193,7 +129,24 @@ fn convert_content(content: &str) -> String {
 
 
 
-fn convert_frontmatter(lines: &[&str]) -> String {
+pub fn convert_frontmatter(lines: &[&str]) -> String {
+    
+    /// Converts Docusaurus frontmatter fields to Quarto equivalents.
+    ///
+    /// Currently handles the following conversions:
+    /// - `sidebar_position` → `order`
+    /// - All other fields are preserved as-is
+    ///
+    /// # Arguments
+    /// - `lines`: Slice of string slices representing frontmatter lines (without --- delimiters)
+    ///
+    /// # Returns
+    /// A String containing the converted frontmatter (without --- delimiters)
+    ///
+    /// # Note
+    /// Future enhancements could include additional field mappings such as:
+    /// - `sidebar_label` → `title` (if title is not present)
+    /// - Custom metadata transformations
 
     let mut result = String::new();
 
@@ -211,9 +164,40 @@ fn convert_frontmatter(lines: &[&str]) -> String {
  }
 
 
-fn convert_admonitions(line: &str) -> String {
-
+pub fn convert_admonitions(line: &str) -> String {
+    
+    /// Converts a single line from Docusaurus admonition syntax to Quarto callout syntax.
+    ///
+    /// Docusaurus uses `:::type Title` syntax, while Quarto uses `:::: {.callout-type}` syntax.
+    ///
+    /// # Supported Admonition Types
+    /// - note → note
+    /// - tip → tip
+    /// - info → note
+    /// - caution → caution
+    /// - warning → warning
+    /// - danger → important
+    ///
+    /// # Arguments
+    /// - `line`: A single line from the markdown file
+    ///
+    /// # Returns
+    /// - Converted callout syntax if the line matches an admonition pattern
+    /// - Original line unchanged if no pattern matches
+    ///
+    /// # Examples
+    /// ```rust
+    /// // Input:  ":::note Important Information"
+    /// // Output: ":::: {.callout-note}\n## Important Information"
+    ///
+    /// // Input:  ":::"
+    /// // Output: "::::"
+    ///
+    /// // Input:  "Regular text"
+    /// // Output: "Regular text"
+    /// ```
     // Regex to match Docusourus admonitions :::note :::tip etc
+
     let admonition_start = Regex::new(r"^:::(\w)+(.*)$").unwrap();
     let admonition_end = Regex::new(r"^:::$").unwrap();
 
@@ -252,8 +236,26 @@ fn convert_admonitions(line: &str) -> String {
 } //end of function
 
 /// Copy the img folder from source to destination
-fn copy_img_folder(source_file: &Path, dest_file: &Path) -> Result<(), std::io::Error> {
+pub fn copy_img_folder(source_file: &Path, dest_file: &Path) -> Result<(), std::io::Error> {
 
+    /// Copies the img folder from source directory to destination directory.
+    ///
+    /// Docusaurus projects often have img folders alongside markdown files containing
+    /// referenced images. This function preserves that structure in the output.
+    ///
+    /// # Arguments
+    /// - `source_file`: Path to the source markdown file
+    /// - `dest_file`: Path to the destination markdown file
+    ///
+    /// # Returns
+    /// - `Ok(())` if img folder doesn't exist or is successfully copied
+    /// - `Err` if directory creation or file copying fails
+    ///
+    /// # Behavior
+    /// - If no img folder exists in the source directory, the function succeeds silently
+    /// - If img folder exists, creates it in destination and copies all files
+    /// - Preserves original filenames
+    
     // Get the parent directory of the source file
     if let Some(source_parent) = source_file.parent() {
         let img_folder = source_parent.join("img");
@@ -282,6 +284,7 @@ fn copy_img_folder(source_file: &Path, dest_file: &Path) -> Result<(), std::io::
     Ok(())
     
 }
+
 
 
 
