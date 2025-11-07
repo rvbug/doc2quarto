@@ -15,6 +15,7 @@ Cargo.lock
 .DS_Store
 Thumbs.db
 
+
 # Testing
 test_input/
 test_output/
