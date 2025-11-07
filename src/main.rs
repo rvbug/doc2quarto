@@ -1,57 +1,55 @@
 use clap::Parser;
 use colored::*;
 use indicatif::{ProgressBar, ProgressStyle};
-use regex::Regex;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use walkdir::WalkDir;
-use anyhow::Result;
 use doc2quarto::{process_files, convert_content, convert_frontmatter, convert_admonitions};
+
 /// CLI tool to convert markdown .md to quarto .qmd format
+
+/// Command-line arguments for the doc2quarto tool.
+///
+/// # Examples
+/// ```bash
+/// # Using long flags
+/// doc2quarto --source ./docs --dest ./quarto-output
+///
+/// # Using short flags
+/// doc2quarto -s ./docs -d ./quarto-output
+/// ```
+
 
 #[derive(Parser, Debug)]
 #[command(name="doc2quarto")]
 #[command(about="Converts markdown.md to Quarto .qmd format", long_about=None)]
-struct Args {
-
-    /// Command-line arguments for the doc2quarto tool.
-    ///
-    /// # Examples
-    /// ```bash
-    /// # Using long flags
-    /// doc2quarto --source ./docs --dest ./quarto-output
-    ///
-    /// # Using short flags
-    /// doc2quarto -s ./docs -d ./quarto-output
-    /// ```
+pub struct Args {
     
     /// source directory containing Docusaurus markdown files
     #[arg(short, long)]
-    source: PathBuf,
+   pub source: PathBuf,
 
     /// destination directory for converted Quarto files
     #[arg(short, long)]
-    dest: PathBuf,
+    pub dest: PathBuf,
 
 }
 
+/// Entry point for the doc2quarto CLI application.
+///
+/// Orchestrates the conversion process from Docusaurus to Quarto format:
+/// 1. Parses command-line arguments
+/// 2. Validates source directory existence
+/// 3. Creates destination directory structure
+/// 4. Discovers all markdown files recursively
+/// 5. Processes each file with progress tracking
+/// 6. Reports conversion statistics
+///
+/// # Exit Codes
+/// - 0: Success
+/// - 1: Source directory not found or destination creation failed
 
 pub fn main() {
-
-    /// Entry point for the doc2quarto CLI application.
-    ///
-    /// Orchestrates the conversion process from Docusaurus to Quarto format:
-    /// 1. Parses command-line arguments
-    /// 2. Validates source directory existence
-    /// 3. Creates destination directory structure
-    /// 4. Discovers all markdown files recursively
-    /// 5. Processes each file with progress tracking
-    /// 6. Reports conversion statistics
-    ///
-    /// # Exit Codes
-    /// - 0: Success
-    /// - 1: Source directory not found or destination creation failed
-
 
     let args = Args::parse();
     println!("\n");
@@ -109,7 +107,7 @@ pub fn main() {
     );
    
     let mut success_count = 0;
-    let mut error_count = 0;
+    let error_count = 0;
 
 
     // Process each markdown file

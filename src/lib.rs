@@ -1,37 +1,52 @@
+/// Converts a Docusaurus markdown file to Quarto format.
+///
+/// This function reads the source file, transforms frontmatter and admonitions,
+/// and writes the output to the destination with a .qmd extension. The directory
+/// structure is preserved relative to the source root.
+///
+/// # Arguments
+///
+/// * `source_file` - Path to the source .md file
+/// * `source_root` - Root directory of source files (for calculating relative paths)
+/// * `dest_root` - Root directory where converted files will be written
+///
+/// # Returns
+///
+/// * `Ok(())` - Conversion successful
+/// * `Err` - File reading, path manipulation, or writing failed
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - Source file cannot be read
+/// - Path manipulation fails (e.g., source_file not under source_root)
+/// - Destination directories cannot be created
+/// - Output file cannot be written
+///
 use regex::Regex;
 use std::fs;
 use std::path::Path;
 
-pub fn process_files(source_file: &Path, source_root: &Path, dest_root: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    
-    /// Processes a single markdown file from Docusaurus to Quarto format.
-    ///
-    /// This function handles the complete conversion pipeline for a single file:
-    /// - Reads the source markdown file
-    /// - Converts content (frontmatter and admonitions)
-    /// - Preserves directory structure in destination
-    /// - Changes file extension from .md to .qmd
-    /// - Copies associated img folders
-    ///
-    /// # Arguments
-    /// - `source_file`: Path to the source .md file
-    /// - `source_root`: Root directory of the source files (for calculating relative paths)
-    /// - `dest_root`: Root directory where converted files will be written
-    ///
-    /// # Returns
-    /// - `Ok(())` on successful conversion and write
-    /// - `Err` if file reading, path manipulation, or writing fails
-    ///
-    /// # Example
-    /// ```rust
-    /// process_file(
-    ///     Path::new("docs/guide/intro.md"),
-    ///     Path::new("docs"),
-    ///     Path::new("output")
-    /// )?;
-    /// ```
 
-   
+/// Processes a single markdown file from Docusaurus to Quarto format.
+///
+/// This function handles the complete conversion pipeline for a single file:
+/// - Reads the source markdown file
+/// - Converts content (frontmatter and admonitions)
+/// - Preserves directory structure in destination
+/// - Changes file extension from .md to .qmd
+/// - Copies associated img folders
+///
+/// # Arguments
+/// - `source_file`: Path to the source .md file
+/// - `source_root`: Root directory of the source files (for calculating relative paths)
+/// - `dest_root`: Root directory where converted files will be written
+///
+/// # Returns
+/// - `Ok(())` on successful conversion and write
+/// - `Err` if file reading, path manipulation, or writing fails
+///
+pub fn process_files(source_file: &Path, source_root: &Path, dest_root: &Path) -> Result<(), Box<dyn std::error::Error>> {
     // Read the entire file  content as a String
     let content = fs::read_to_string(source_file)?;
     println!("  📖 Read {} bytes from {:?}", content.len(), source_file);
@@ -66,29 +81,22 @@ pub fn process_files(source_file: &Path, source_root: &Path, dest_root: &Path) -
     Ok(())
 }
 
-/// Convert Docusourus markdown content to Quarto format
-pub fn convert_content(content: &str) -> String {
 
-    /// Converts Docusaurus markdown content to Quarto format.
-    ///
-    /// Performs two main transformations:
-    /// 1. Frontmatter: Converts Docusaurus YAML frontmatter to Quarto format
-    /// 2. Admonitions: Converts Docusaurus-style admonitions (:::note) to Quarto callout blocks
-    ///
-    /// The function uses a state machine to track whether it's currently processing
-    /// frontmatter (between --- markers) or regular content.
-    ///
-    /// # Arguments
-    /// - `content`: The complete content of the markdown file as a string
-    ///
-    /// # Returns
-    /// A new String containing the converted content in Quarto format
-    ///
-    /// # Example
-    /// ```rust
-    /// let docusaurus_content = "---\ntitle: Hello\n---\n:::note\nImportant!\n:::";
-    /// let quarto_content = convert_content(docusaurus_content);
-    /// ```
+/// Converts Docusaurus markdown content to Quarto format.
+///
+/// Performs two main transformations:
+/// 1. Frontmatter: Converts Docusaurus YAML frontmatter to Quarto format
+/// 2. Admonitions: Converts Docusaurus-style admonitions (:::note) to Quarto callout blocks
+///
+/// The function uses a state machine to track whether it's currently processing
+/// frontmatter (between --- markers) or regular content.
+///
+/// # Arguments
+/// - `content`: The complete content of the markdown file as a string
+///
+/// # Returns
+/// A new String containing the converted content in Quarto format
+pub fn convert_content(content: &str) -> String {
 
     let mut result = String::new();
     let mut in_frontmatter = false;
@@ -126,28 +134,24 @@ pub fn convert_content(content: &str) -> String {
     result
 }
 
-
-
-
+/// Converts Docusaurus frontmatter fields to Quarto equivalents.
+///
+/// Currently handles the following conversions:
+/// - `sidebar_position` → `order`
+/// - All other fields are preserved as-is
+///
+/// # Arguments
+/// - `lines`: Slice of string slices representing frontmatter lines (without --- delimiters)
+///
+/// # Returns
+/// A String containing the converted frontmatter (without --- delimiters)
+///
+/// # Note
+/// Future enhancements could include additional field mappings such as:
+/// - `sidebar_label` → `title` (if title is not present)
+/// - Custom metadata transformations
 pub fn convert_frontmatter(lines: &[&str]) -> String {
     
-    /// Converts Docusaurus frontmatter fields to Quarto equivalents.
-    ///
-    /// Currently handles the following conversions:
-    /// - `sidebar_position` → `order`
-    /// - All other fields are preserved as-is
-    ///
-    /// # Arguments
-    /// - `lines`: Slice of string slices representing frontmatter lines (without --- delimiters)
-    ///
-    /// # Returns
-    /// A String containing the converted frontmatter (without --- delimiters)
-    ///
-    /// # Note
-    /// Future enhancements could include additional field mappings such as:
-    /// - `sidebar_label` → `title` (if title is not present)
-    /// - Custom metadata transformations
-
     let mut result = String::new();
 
     for line in lines {
@@ -164,39 +168,28 @@ pub fn convert_frontmatter(lines: &[&str]) -> String {
  }
 
 
+/// Converts a single line from Docusaurus admonition syntax to Quarto callout syntax.
+///
+/// Docusaurus uses `:::type Title` syntax, while Quarto uses `:::: {.callout-type}` syntax.
+///
+/// # Supported Admonition Types
+/// - note → note
+/// - tip → tip
+/// - info → note
+/// - caution → caution
+/// - warning → warning
+/// - danger → important
+///
+/// # Arguments
+/// - `line`: A single line from the markdown file
+///
+/// # Returns
+/// - Converted callout syntax if the line matches an admonition pattern
+/// - Original line unchanged if no pattern matches
+///
+
 pub fn convert_admonitions(line: &str) -> String {
     
-    /// Converts a single line from Docusaurus admonition syntax to Quarto callout syntax.
-    ///
-    /// Docusaurus uses `:::type Title` syntax, while Quarto uses `:::: {.callout-type}` syntax.
-    ///
-    /// # Supported Admonition Types
-    /// - note → note
-    /// - tip → tip
-    /// - info → note
-    /// - caution → caution
-    /// - warning → warning
-    /// - danger → important
-    ///
-    /// # Arguments
-    /// - `line`: A single line from the markdown file
-    ///
-    /// # Returns
-    /// - Converted callout syntax if the line matches an admonition pattern
-    /// - Original line unchanged if no pattern matches
-    ///
-    /// # Examples
-    /// ```rust
-    /// // Input:  ":::note Important Information"
-    /// // Output: ":::: {.callout-note}\n## Important Information"
-    ///
-    /// // Input:  ":::"
-    /// // Output: "::::"
-    ///
-    /// // Input:  "Regular text"
-    /// // Output: "Regular text"
-    /// ```
-    // Regex to match Docusourus admonitions :::note :::tip etc
 
     let admonition_start = Regex::new(r"^:::(\w)+(.*)$").unwrap();
     let admonition_end = Regex::new(r"^:::$").unwrap();
@@ -235,26 +228,26 @@ pub fn convert_admonitions(line: &str) -> String {
     }
 } //end of function
 
-/// Copy the img folder from source to destination
-pub fn copy_img_folder(source_file: &Path, dest_file: &Path) -> Result<(), std::io::Error> {
 
-    /// Copies the img folder from source directory to destination directory.
-    ///
-    /// Docusaurus projects often have img folders alongside markdown files containing
-    /// referenced images. This function preserves that structure in the output.
-    ///
-    /// # Arguments
-    /// - `source_file`: Path to the source markdown file
-    /// - `dest_file`: Path to the destination markdown file
-    ///
-    /// # Returns
-    /// - `Ok(())` if img folder doesn't exist or is successfully copied
-    /// - `Err` if directory creation or file copying fails
-    ///
-    /// # Behavior
-    /// - If no img folder exists in the source directory, the function succeeds silently
-    /// - If img folder exists, creates it in destination and copies all files
-    /// - Preserves original filenames
+/// Copies the img folder from source directory to destination directory.
+///
+/// Docusaurus projects often have img folders alongside markdown files containing
+/// referenced images. This function preserves that structure in the output.
+///
+/// # Arguments
+/// - `source_file`: Path to the source markdown file
+/// - `dest_file`: Path to the destination markdown file
+///
+/// # Returns
+/// - `Ok(())` if img folder doesn't exist or is successfully copied
+/// - `Err` if directory creation or file copying fails
+///
+/// # Behavior
+/// - If no img folder exists in the source directory, the function succeeds silently
+/// - If img folder exists, creates it in destination and copies all files
+/// - Preserves original filenames
+///
+pub fn copy_img_folder(source_file: &Path, dest_file: &Path) -> Result<(), std::io::Error> {
     
     // Get the parent directory of the source file
     if let Some(source_parent) = source_file.parent() {
