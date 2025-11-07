@@ -1,3 +1,6 @@
+
+<img width="56" height="78" alt="doc2quartologo" src="https://github.com/user-attachments/assets/1d1a73cd-0fd6-41da-b5b4-bcda31aad6b1" />
+
 # doc2quarto
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
