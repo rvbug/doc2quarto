@@ -1,2 +1,27 @@
-/target
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Testing
+test_input/
+test_output/
+/output/
+
+# Build artifacts
+*.dll
+*.exe
+*.o
+*.so
