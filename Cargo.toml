@@ -2,6 +2,20 @@
 name = "doc2quarto"
 version = "0.1.0"
 edition = "2024"
+authors = ["Rakesh Venkat qubitai.in@gmail.com"]
+description = "CLI tool to conver Docusaurus markdown files to quarto format"
+license = "MIT"
+repository = "https://github.com/rvbug/doc2quarto"
+homepage = "https://github.com/rvbug/doc2quarto"
+documentation = "https://docs.rs/doc2quarto"
+readme = "README.md"
+keywords = ["markdown", "docusaurus", "quarto", "cli","converter"]
+categories = ["command-line-utilities", "text-processing"]
+exclude = [
+    "text_input/*",
+    "text_output/*",
+    ".github/*"
+  ]
 
 [lib]
 name = "doc2quarto"

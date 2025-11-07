@@ -1,41 +1,42 @@
-/// Converts a Docusaurus markdown file to Quarto format.
-///
-/// This function reads the source file, transforms frontmatter and admonitions,
-/// and writes the output to the destination with a .qmd extension. The directory
-/// structure is preserved relative to the source root.
-///
-/// # Arguments
-///
-/// * `source_file` - Path to the source .md file
-/// * `source_root` - Root directory of source files (for calculating relative paths)
-/// * `dest_root` - Root directory where converted files will be written
-///
-/// # Returns
-///
-/// * `Ok(())` - Conversion successful
-/// * `Err` - File reading, path manipulation, or writing failed
-///
-/// # Errors
-///
-/// Returns an error if:
-/// - Source file cannot be read
-/// - Path manipulation fails (e.g., source_file not under source_root)
-/// - Destination directories cannot be created
-/// - Output file cannot be written
-///
-/// Entry point for the doc2quarto CLI application.
-///
-/// Orchestrates the conversion process from Docusaurus to Quarto format:
-/// 1. Parses command-line arguments
-/// 2. Validates source directory existence
-/// 3. Creates destination directory structure
-/// 4. Discovers all markdown files recursively
-/// 5. Processes each file with progress tracking
-/// 6. Reports conversion statistics
-///
-/// # Exit Codes
-/// - 0: Success
-/// - 1: Source directory not found or destination creation failed
+//! Converts a Docusaurus markdown file to Quarto format.
+//!
+//! This function reads the source file, transforms frontmatter and admonitions,
+//! and writes the output to the destination with a .qmd extension. The directory
+//! structure is preserved relative to the source root.
+//!
+//! Entry point for the doc2quarto CLI application.
+//!
+//! Orchestrates the conversion process from Docusaurus to Quarto format:
+//! 1. Parses command-line arguments
+//! 2. Validates source directory existence
+//! 3. Creates destination directory structure
+//! 4. Discovers all markdown files recursively
+//! 5. Processes each file with progress tracking
+//! 6. Reports conversion statistics
+//!
+//! # Exit Codes
+//! - 0: Success
+//! - 1: Source directory not found or destination creation failed
+//!
+//! # Arguments
+//!
+//! * `source_file` - Path to the source .md file
+//! * `source_root` - Root directory of source files (for calculating relative paths)
+//! * `dest_root` - Root directory where converted files will be written
+//!
+//! # Returns
+//!
+//! * `Ok(())` - Conversion successful
+//! * `Err` - File reading, path manipulation, or writing failed
+//!
+//! # Errors
+//!
+//! Returns an error if:
+//! - Source file cannot be read
+//! - Path manipulation fails (e.g., source_file not under source_root)
+//! - Destination directories cannot be created
+//! - Output file cannot be written
+//!
 use regex::Regex;
 use std::fs;
 use std::path::Path;
