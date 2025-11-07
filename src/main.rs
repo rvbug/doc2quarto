@@ -4,7 +4,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use std::fs;
 use std::path::{PathBuf};
 use walkdir::WalkDir;
-use doc2quarto::{process_files, convert_content, convert_frontmatter, convert_admonitions};
+use doc2quarto::{process_files};
 
 #[derive(Parser, Debug)]
 #[command(name="doc2quarto")]
@@ -21,19 +21,6 @@ pub struct Args {
 
 }
 
-/// Entry point for the doc2quarto CLI application.
-///
-/// Orchestrates the conversion process from Docusaurus to Quarto format:
-/// 1. Parses command-line arguments
-/// 2. Validates source directory existence
-/// 3. Creates destination directory structure
-/// 4. Discovers all markdown files recursively
-/// 5. Processes each file with progress tracking
-/// 6. Reports conversion statistics
-///
-/// # Exit Codes
-/// - 0: Success
-/// - 1: Source directory not found or destination creation failed
 
 pub fn main() {
 
@@ -92,9 +79,8 @@ pub fn main() {
             .progress_chars("#>-"),
     );
    
-    let mut success_count = 0;
-    let error_count = 0;
-
+    // let mut success_count = 0;
+    // let error_count = 0;
 
     // Process each markdown file
     for md_file in md_files {
@@ -103,7 +89,7 @@ pub fn main() {
 
         match process_files(&md_file, &args.source, &args.dest) {
             Ok(_) => {
-                success_count += 1;
+                // success_count += 1;
                 pb.println(format!("{} Processed: {}", "✓".green(), file_name));
             }
             Err(e) => {

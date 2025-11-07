@@ -43,7 +43,6 @@ use std::path::Path;
 
 
 /// Processes a single markdown file from Docusaurus to Quarto format.
-///
 /// This function handles the complete conversion pipeline for a single file:
 /// - Reads the source markdown file
 /// - Converts content (frontmatter and admonitions)
