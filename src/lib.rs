@@ -23,6 +23,19 @@
 /// - Destination directories cannot be created
 /// - Output file cannot be written
 ///
+/// Entry point for the doc2quarto CLI application.
+///
+/// Orchestrates the conversion process from Docusaurus to Quarto format:
+/// 1. Parses command-line arguments
+/// 2. Validates source directory existence
+/// 3. Creates destination directory structure
+/// 4. Discovers all markdown files recursively
+/// 5. Processes each file with progress tracking
+/// 6. Reports conversion statistics
+///
+/// # Exit Codes
+/// - 0: Success
+/// - 1: Source directory not found or destination creation failed
 use regex::Regex;
 use std::fs;
 use std::path::Path;

@@ -6,20 +6,6 @@ use std::path::{PathBuf};
 use walkdir::WalkDir;
 use doc2quarto::{process_files, convert_content, convert_frontmatter, convert_admonitions};
 
-/// CLI tool to convert markdown .md to quarto .qmd format
-
-/// Command-line arguments for the doc2quarto tool.
-///
-/// # Examples
-/// ```bash
-/// # Using long flags
-/// doc2quarto --source ./docs --dest ./quarto-output
-///
-/// # Using short flags
-/// doc2quarto -s ./docs -d ./quarto-output
-/// ```
-
-
 #[derive(Parser, Debug)]
 #[command(name="doc2quarto")]
 #[command(about="Converts markdown.md to Quarto .qmd format", long_about=None)]
