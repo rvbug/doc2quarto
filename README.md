@@ -28,21 +28,38 @@ Read more about the migration rationale in [this blog post](https://qubitai.in/q
 
 ## Installation
 
-### Option 1: Install from crates.io (Coming Soon)
+### Option 1: Install from crates.io (Rust Users)
 ```bash
-cargo install doc2quarto
+# requires rust
+$> cargo install doc2quarto
 ```
 
-### Option 2: Build from Source
+### Option 2: Using homebrew on MacOS 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/doc2quarto.git
-cd doc2quarto
+$> brew install rvbug/tap/doc2quarto
+```
 
-# Build release binary
-cargo build --release
 
-# Binary will be at: ./target/release/doc2quarto
+### Option 3: Debian (Linux)
+Download the .deb package from [releases](https://github.com/rvbug/doc2quarto/releases/latest):
+
+```
+# Download latest release 
+$> wget https://github.com/rvbug/doc2quarto/releases/download/v0.1.1/doc2quarto_0.1.1-1_amd64.deb
+
+# Install
+$> sudo dpkg -i doc2quarto_0.1.1-1_amd64.deb
+```
+
+### Option 4: Build from Source
+Requires [Rust](https://rustup.rs/) to be installed.
+
+```bash
+$> git clone https://github.com/rvbug/doc2quarto.git
+
+$> cd doc2quarto
+
+$> cargo install --path .
 ```
 
 ### Option 3: Install Locally
@@ -52,6 +69,39 @@ cargo install --path .
 
 # Now you can run 'doc2quarto' from anywhere
 doc2quarto --help
+```
+
+
+## Verify Installation
+```bash
+$> doc2quarto --help
+```
+
+## Updating
+### Homebrew
+```bash
+$> brew upgrade doc2quarto
+```
+
+### Cargo
+```bash
+$> cargo install doc2quarto
+```
+
+## Uninstallation
+
+### Homebrew
+```bash
+$> cargo install doc2quarto
+```
+### Cargo
+```bash
+$> cargo uninstall doc2quarto
+```
+
+### Debian
+```bash
+$> sudo apt remove doc2quarto
 ```
 
 ## Usage
@@ -196,6 +246,7 @@ doc2quarto/
 - [ ] Dry-run mode
 - [ ] Configuration file support
 - [ ] Parallel processing for large documentation sets
+- [ ] Support for other OS
 
 
 ## License
