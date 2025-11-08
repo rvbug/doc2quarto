@@ -62,7 +62,7 @@ $> cd doc2quarto
 $> cargo install --path .
 ```
 
-### Option 3: Install Locally
+### Option 5: Install Locally
 ```bash
 # Build and install to ~/.cargo/bin
 cargo install --path .
