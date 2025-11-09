@@ -2,6 +2,10 @@
 
 # doc2quarto
 
+[![CI](https://github.com/rvbug/doc2quarto/actions/workflows/release.yml/badge.svg)](https://github.com/rvbug/doc2quarto/actions)
+[![Release](https://github.com/rvbug/doc2quarto/workflows/Release/badge.svg)](https://github.com/rvbug/doc2quarto/releases)
+[![Crates.io](https://img.shields.io/crates/v/doc2quarto.svg)](https://crates.io/crates/doc2quarto)
+[![Downloads](https://img.shields.io/crates/d/doc2quarto.svg)](https://crates.io/crates/doc2quarto)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
 
