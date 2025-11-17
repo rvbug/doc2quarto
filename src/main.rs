@@ -7,6 +7,7 @@ use walkdir::WalkDir;
 use doc2quarto::{process_files};
 
 #[derive(Parser, Debug)]
+#[command(version)]
 #[command(name="doc2quarto")]
 #[command(about="Converts markdown.md to Quarto .qmd format", long_about=None)]
 pub struct Args {
