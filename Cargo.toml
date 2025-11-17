@@ -1,6 +1,6 @@
 [package]
 name = "doc2quarto"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["Rakesh Venkat qubitai.in@gmail.com"]
 description = "CLI tool to conver Docusaurus markdown files to quarto format"
