@@ -5,12 +5,12 @@ Thank you for your interest in contributing! 🎉
 ## How to Contribute
 
 ### Reporting Bugs
-1. Check if the bug has already been reported in [Issues](https://github.com/YOUR_USERNAME/doc2quarto/issues)
+1. Check if the bug has already been reported in [Issues](https://github.com/rvbug/doc2quarto/issues)
 2. If not, create a new issue using the Bug Report template
 3. Provide as much detail as possible
 
 ### Suggesting Features
-1. Check if the feature has already been suggested in [Issues](https://github.com/YOUR_USERNAME/doc2quarto/issues)
+1. Check if the feature has already been suggested in [Issues](https://github.com/rvbug/doc2quarto/issues)
 2. Create a new issue using the Feature Request template
 3. Explain your use case clearly
 
