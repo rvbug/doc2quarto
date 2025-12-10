@@ -9,36 +9,7 @@ updates:
     labels:
       - "dependencies"
       - "rust"
-  
-  # For Python projects
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "python"
-  
-  # For React projects (npm/yarn)
-  # - package-ecosystem: "npm"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   open-pull-requests-limit: 10
-  #   labels:
-  #     - "dependencies"
-  #     - "javascript"
-  
-  # For Ruby projects
-  - package-ecosystem: "bundler"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "ruby"
+
   
   # For GitHub Actions
   - package-ecosystem: "github-actions"
