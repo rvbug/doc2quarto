@@ -1,17 +1,15 @@
-name: Labeler
+# Rust files
+rust:
+  - '**/*.rs'
+  - '**/Cargo.toml'
+  - '**/Cargo.lock'
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+# Documentation
+documentation:
+  - '**/*.md'
+  - 'docs/**/*'
 
-permissions:
-  contents: read
-  pull-requests: write
-
-jobs:
-  label:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/labeler@v5
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+# GitHub Actions
+github-actions:
+  - '.github/workflows/*'
+  - '.github/actions/*'
