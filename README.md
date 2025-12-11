@@ -8,6 +8,14 @@
 [![Downloads](https://img.shields.io/crates/d/doc2quarto.svg)](https://crates.io/crates/doc2quarto)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![Contributors](https://img.shields.io/github/contributors/rvbug/doc2quarto)](https://github.com/rvbug/doc2quarto/graphs/contributors)
+
+
+
+
+
+
+
 
 A CLI tool to convert Docusaurus markdown files to Quarto format, preserving structure and transforming syntax for seamless migration.
 
