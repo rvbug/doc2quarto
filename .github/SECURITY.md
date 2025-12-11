@@ -1,0 +1,31 @@
+# Security Policy
+
+## Supported Versions
+
+Currently supported versions:
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.x.x   | :white_check_mark: |
+| < 1.0   | :x:                |
+
+## Reporting a Vulnerability
+
+I take security vulnerabilities seriously. If you discover a security issue, please:
+
+1. **DO NOT** open a public issue
+2. Email qubitai.in@gmail.com (or use GitHub's private vulnerability reporting)
+3. Include:
+   - Description of the vulnerability
+   - Steps to reproduce
+   - Potential impact
+   - Suggested fix (if any)
+
+I will respond within 48 hours and work with you to address the issue.
+
+## Security Advisories
+
+Public security advisories will be published at:
+https://github.com/rvbug/doc2quarto/security/advisories
+
+Thank you for helping keep our project secure!
