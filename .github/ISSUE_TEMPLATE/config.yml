@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/rvbug/doc2quarto/discussions
+    about: Ask questions and discuss ideas
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/rvbug/doc2quarto/security/advisories/new
+    about: Report security vulnerabilities privately
