@@ -11,12 +11,6 @@
 [![Contributors](https://img.shields.io/github/contributors/rvbug/doc2quarto)](https://github.com/rvbug/doc2quarto/graphs/contributors)
 
 
-
-
-
-
-
-
 A CLI tool to convert Docusaurus markdown files to Quarto format, preserving structure and transforming syntax for seamless migration.
 
 ## Overview
@@ -36,7 +30,7 @@ As documentation needs evolve, Quarto offers:
 - **Jupyter Integration**: Embed executable code and visualizations
 - **Flexibility**: Better suited for technical documentation and research outputs
 
-Read more about the migration rationale in [this blog post](https://qubitai.in/scribe/quarto.html) and detailed [documentation](https://qubitai.in/book/doc2quarto/) of Doc2Quarto.
+Read more about the migration rationale in [this blog post](https://qubitai.in/scribe/quarto.html) and detailed [documentation](https://qubitai.in/book/doc2quarto/) of Doc2Quarto via "The Book".
 
 ## Installation
 
@@ -118,12 +112,23 @@ $> sudo apt remove doc2quarto
 
 ## Usage
 
-```bash
-# Basic usage
-doc2quarto --source ./docs --dest ./quarto-docs
+### Help
 
-# Using short flags
-doc2quarto -s ./docs -d ./quarto-docs
+<img width="1492" height="400" alt="image" src="https://github.com/user-attachments/assets/bc2fbfdc-c0d9-4423-bea5-e03ed1e57671" />
+
+```bash
+$> doc2quarto --help
+
+```
+
+
+### Basic usage
+```bash
+$> doc2quarto --source ./docs --dest ./quarto-docs
+```
+```
+### Using short flags
+$> doc2quarto -s ./docs -d ./quarto-docs
 ```
 
 ### Arguments
