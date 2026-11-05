@@ -36,7 +36,7 @@ As documentation needs evolve, Quarto offers:
 - **Jupyter Integration**: Embed executable code and visualizations
 - **Flexibility**: Better suited for technical documentation and research outputs
 
-Read more about the migration rationale in [this blog post](https://qubitai.in/scribe/quarto.html).
+Read more about the migration rationale in [this blog post](https://qubitai.in/scribe/quarto.html) and detailed [documentation](https://qubitai.in/book/doc2quarto/)
 
 ## Installation
 
